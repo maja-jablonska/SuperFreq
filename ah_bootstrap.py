@@ -53,7 +53,31 @@ from configparser import ConfigParser, RawConfigParser
 import pkg_resources
 
 from setuptools import Distribution
-from setuptools.package_index import PackageIndex
+
+
+def _load_package_index():
+    """Return the first available ``PackageIndex`` implementation."""
+
+    from importlib import import_module
+
+    for module_path in (
+        'setuptools.package_index',
+        'setuptools._distutils.package_index',
+        'distutils.package_index',
+    ):
+        try:
+            module = import_module(module_path)
+        except ImportError:
+            continue
+
+        package_index = getattr(module, 'PackageIndex', None)
+        if package_index is not None:
+            return package_index
+
+    return None
+
+
+PackageIndex = _load_package_index()
 
 # This is the minimum Python version required for astropy-helpers
 __minimum_python_version__ = (3, 5)
@@ -584,6 +608,9 @@ class _Bootstrapper(object):
 
         req = pkg_resources.Requirement.parse(
             '{0}>{1},<{2}'.format(DIST_NAME, dist.version, next_version))
+
+        if PackageIndex is None:
+            return None
 
         package_index = PackageIndex(index_url=self.index_url)
 
