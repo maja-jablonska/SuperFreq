@@ -53,7 +53,11 @@ from configparser import ConfigParser, RawConfigParser
 import pkg_resources
 
 from setuptools import Distribution
-from setuptools.package_index import PackageIndex
+
+try:
+    from setuptools.package_index import PackageIndex
+except ImportError:  # setuptools >= 70
+    from setuptools._distutils.package_index import PackageIndex
 
 # This is the minimum Python version required for astropy-helpers
 __minimum_python_version__ = (3, 5)
