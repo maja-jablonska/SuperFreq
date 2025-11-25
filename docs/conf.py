@@ -30,16 +30,13 @@ import os
 import sys
 
 try:
-    import astropy_helpers
+    # Prefer astropy_helpers when available to mirror the original template
+    from astropy_helpers.sphinx.conf import *  # noqa: F401,F403
 except ImportError:
-    # Building from inside the docs/ directory?
-    if os.path.basename(os.getcwd()) == 'docs':
-        a_h_path = os.path.abspath(os.path.join('..', 'astropy_helpers'))
-        if os.path.isdir(a_h_path):
-            sys.path.insert(1, a_h_path)
-
-# Load all of the global Astropy configuration
-from astropy_helpers.sphinx.conf import *
+    # Fall back to the configuration bundled with astropy when the helper
+    # package is not present (e.g. when building docs from a source checkout
+    # without the submodule).
+    from astropy.sphinx.conf import *  # noqa: F401,F403
 
 # Get configuration information from setup.cfg
 try:
