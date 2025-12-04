@@ -30,7 +30,7 @@ cdef:
     double *zreal
     double *zimag
 
-cdef double phi_w(double w):
+cdef double phi_w(double w) noexcept:
     """ φ(ω) from Laskar (1990) or Valluri & Merritt (1998) Eq. 12 """
 
     cdef int i

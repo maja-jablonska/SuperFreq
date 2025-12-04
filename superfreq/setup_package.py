@@ -1,32 +1,25 @@
-# Licensed under a 3-clause BSD style license - see PYFITS.rst
-from __future__ import absolute_import
+"""Build configuration for superfreq extension modules."""
 
-from distutils.core import Extension
-
-from astropy_helpers import setup_helpers
+from setuptools import Extension
 
 
 def get_extensions():
-    cfg_naff = setup_helpers.DistutilsExtensionArgs()
-    # 'numpy' will be replaced with the proper path to the numpy includes
-    cfg_naff['include_dirs'].append('numpy')
-    cfg_naff['include_dirs'].append('cextern')
-    cfg_naff['sources'].append('superfreq/_naff.pyx')
-    cfg_naff['sources'].append('cextern/brent.c')
-    cfg_naff['sources'].append('cextern/simpson.c')
-    ext_naff = Extension('superfreq._naff', **cfg_naff)
+    # Import numpy lazily to avoid importing it at module load time when it may
+    # not yet be installed (e.g. during build isolation).
+    import numpy as np
 
-    cfg_simpsgauss = setup_helpers.DistutilsExtensionArgs()
-    cfg_simpsgauss['include_dirs'].append('numpy')
-    cfg_simpsgauss['include_dirs'].append('cextern')
-    cfg_simpsgauss['sources'].append('superfreq/simpsgauss.pyx')
-    cfg_simpsgauss['sources'].append('cextern/simpson.c')
-    ext_simpsgauss = Extension('superfreq.simpsgauss', **cfg_simpsgauss)
+    common_include_dirs = [np.get_include(), "cextern"]
 
-    return [ext_naff, ext_simpsgauss]
+    naff_extension = Extension(
+        name="superfreq._naff",
+        sources=["superfreq/_naff.pyx", "cextern/brent.c", "cextern/simpson.c"],
+        include_dirs=common_include_dirs,
+    )
 
+    simpsgauss_extension = Extension(
+        name="superfreq.simpsgauss",
+        sources=["superfreq/simpsgauss.pyx", "cextern/simpson.c"],
+        include_dirs=common_include_dirs,
+    )
 
-# are the c files provided by some external library?  If so, should add it here
-# so that users have the option of using that instead of the builtin one
-#def get_external_libraries():
-#    return ['something']
+    return [naff_extension, simpsgauss_extension]
