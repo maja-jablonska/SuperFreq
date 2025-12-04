@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from importlib import util
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.extension import Extension
 from Cython.Build import cythonize
 
@@ -31,4 +31,5 @@ extensions = cythonize(helpers.get_extensions(), language_level="3")
 setup(
     ext_modules=extensions,
     long_description=long_description,
+    packages=find_packages(exclude=["astropy_helpers", "cextern", "docs"]),
 )
