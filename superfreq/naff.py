@@ -1,6 +1,7 @@
 # coding: utf-8
 
 # Standard library
+import math
 import time
 
 # Third-party
@@ -28,8 +29,8 @@ def hamming(t_T, p):
     p : numeric
         Exponent of filter.
     """
-    p_fac = np.math.factorial(p)
-    p2_fac = np.math.factorial(2*p)
+    p_fac = math.factorial(p)
+    p2_fac = math.factorial(2*p)
     return 2. ** p * p_fac**2. / p2_fac * (1. + np.cos(np.pi*t_T))**p
 
 
